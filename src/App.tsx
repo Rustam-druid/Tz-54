@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import GameStats from "./components/button/button.tsx";
-import GameBoard from "./components/gameboard/gameBoard.tsx";
+import GameBoard, { ClickBlock } from "./components/gameboard/gameBoard.tsx";
 
 const App = () => {
 
@@ -17,29 +17,23 @@ const App = () => {
 
     const [items, setItems] = useState(createItems());
     const [tries, setTries] = useState(0);
+    let n = 'Вы выйиграли'
 
 
-    const changeColor = (id:number) => {
+    const changeColor = (id:number ) => {
         const index = items.findIndex((block) => block.id === id);
+     const getF = ClickBlock(items, id);
+     const Items = [...items]
+     const item = Items[index]
+        setItems(getF);
 
-        const copyitems = [...items];
-        const copyitem = copyitems[index];
-        if (!copyitem.clicked) {
-            copyitems[index] = {
-                ...copyitem,
-                color: 'white',
-                clicked: true,
-            };
-            if (copyitems[index].hasItem) {
-                copyitems[index].name = "O";
-                copyitems[index].color = "";
-                    copyitems.forEach((item) => {
-                        item.clicked = true;
-                    });
-            }
+        if(!item.hasItem === true) {
             setTries(tries + 1)
+        }else {
+            let n;
         }
-        setItems(copyitems);
+
+
     };
 
     const reset= () => {
@@ -51,6 +45,7 @@ const App = () => {
         <div className='container'>
             <GameBoard items={items} changeColor={changeColor} />
                 <GameStats tries={tries} reset={reset} />
+            <h2>{n}</h2>
         </div>
 
     )

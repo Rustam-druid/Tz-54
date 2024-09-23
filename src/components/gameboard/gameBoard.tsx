@@ -8,6 +8,29 @@ interface GameBoardProps {
 
 }
 
+const ClickBlock = (items, id: number)=> {
+    const index = items.findIndex((block) => block.id === id);
+
+    const copyitems = [...items];
+    const copyitem = copyitems[index];
+    if (!copyitem.clicked) {
+        copyitems[index] = {
+            ...copyitem,
+            color: 'white',
+            clicked: true,
+        };
+        if (copyitems[index].hasItem) {
+            copyitems[index].name = "O";
+            copyitems[index].color = "";
+            copyitems.forEach((item) => {
+                item.clicked = true;
+                item.hasItem = true;
+            });
+        }
+    }
+        return copyitems
+}
+
 const GameBoard: React.FC<GameBoardProps> = ({ items, changeColor }) => {
     return (
         <div className="board">
@@ -22,5 +45,6 @@ const GameBoard: React.FC<GameBoardProps> = ({ items, changeColor }) => {
         </div>
     );
 };
-
+    export { ClickBlock };
 export default GameBoard;
+
