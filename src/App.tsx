@@ -1,82 +1,74 @@
-import "./App.css";
-import {useState} from "react";
-import People from "./components/People/People.tsx";
-import {IPerson} from "./types";
-import Counter from "./components/Counter/Counter.tsx";
-import ToggleBtn from "./components/ToggleBtn/ToggleBtn.tsx";
 
+import {useState} from "react";
+import Board from "./components/Board/Board.tsx";
 
 const App = () => {
-    const [people, setPeople] = useState<IPerson[]>([
-        {id: 1, name: "John", age: 28, hobby: "Coding"},
-        {id: 2, name: "Jane", age: 30, hobby: "Swimming"},
-        {id: 3, name: "Lena", age: 10, hobby: "Draw"},
-        {id: 4, name: "Vasya", age: 50, hobby: "Coding"},
-    ]);
-    const [togglePeople, setTogglePeople] = useState<boolean>(true);
 
-    const changeName = (e: React.ChangeEvent<HTMLInputElement>, id: number) => {
+    const createItems = () => {
+        const arrblock = [];
+        for (let i = 0; i < 36; i++) {
+            arrblock.push({ hasItem: false, clicked: false, id: i , color:'gray', name:''});
+        };
+        const random = Math.floor(Math.random() * arrblock.length)
+        arrblock[random ].hasItem = true;
 
-        const copyPeople = people.map((person) => {
-            if (person.id === id) {
-                return {
-                    ...person,
-                    name: e.target.value,
-                };
+        return arrblock;
+    };
+
+    const [items, setItems] = useState(createItems())
+    const [tries, setTries] = useState(0);
+
+
+    const changeColor = (id:number) => {
+        const index = items.findIndex((block) => block.id === id);
+
+        const copyitems = [...items];
+        const copyitem = copyitems[index];
+        if (!copyitem.clicked) {
+            copyitems[index] = {
+                ...copyitem,
+                color: 'white',
+                clicked: true,
+            };
+            if (copyitems[index].hasItem) {
+                copyitems[index].name = "O";
+                copyitems[index].color = "";
+                alert('найден')
+                copyitems.forEach((item) => {
+                    item.clicked = true;
+                });
             }
-            return {...person};
-        });
+            setTries(tries + 1)
+        }
+        setItems(copyitems);
+    }
 
-        setPeople(copyPeople);
-    };
-
-    const changeAge = (id: number) => {
-        const index = people.findIndex((person) => person.id === id);
-
-        const copyPeople = people.map((person, i) => {
-            if (i === index) {
-                return {
-                    ...person,
-                    age: person.age + 1,
-                };
-            }
-            return {...person};
-        });
-
-        setPeople(copyPeople);
-    };
-
-    let peopleList = null;
-
-    const onTooglePeople = () => {
-        setTogglePeople((prevState) => !prevState);
-    };
-
-    const deletePerson = (id: number) => {
-        const copyPeople = people.filter((person) => person.id !== id);
-
-        setPeople(copyPeople);
-    };
-
-    if (togglePeople) {
-        peopleList = (
-            <People
-                people={people}
-                deletePerson={deletePerson}
-                changeName={changeName}
-                changeAge={changeAge}
-            />
-        );
+    const reset= () => {
+        setTries(0)
+        setItems(createItems());
     }
 
     return (
-        <div className="App">
-            {peopleList}
+        <div className='container'>
+            <div className="board">
+                {items.map((item) => (
+                    <Board
+                        color={item.color}
+                        name={item.name}
+                        onClick={() => changeColor(item.id)}
+                    />
+                ))}
+            </div>
+            <div className='bottom'>
+                <h2>Tries: {tries}</h2>
+                <button onClick={reset}>Reset</button>
+            </div>
 
-            <ToggleBtn onTooglePeople={onTooglePeople} togglePeople={togglePeople}/>
-            <Counter people={people}/>
         </div>
-    );
-};
 
-export default App;
+
+    )
+
+}
+
+export default App
